@@ -1,2 +1,2 @@
-#Sistema de Estoque de Medicamentos da UBS
+# Sistema de Estoque de Medicamentos da UBS
 O sistema de controle de estoque de medicamentos tem como objetivo principal gerenciar o estoque de medicamentos da UBS, garantindo que os medicamentos estejam disponíveis para a comunidade quando necessário. O sistema permitirá: Cadastro de medicamentos, Atualização de quantidades, Consulta de medicamentos disponíveis, Geração de relatórios e alertas de estoque baixo, Retirada de medicamentos pelos moradores do bairro.
