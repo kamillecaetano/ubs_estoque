@@ -13,6 +13,9 @@ const pool = new Pool({
   port: 5432,
 });
 
+const cors = require('cors');
+server.use(cors());
+
 server.use(bodyParser.json());
 
 server.get('/', (req, res) => {
@@ -29,7 +32,7 @@ server.get('/medicamentos', async (req, res) => {
   }
 })
 
-server.post('/medicamentos', async (req, res) => {
+server.post('/cadastro-medicamentos', async (req, res) => {
   const {nome, quantidade, descricao} = req.body;
   try{
     const {rows} = await pool.query(
