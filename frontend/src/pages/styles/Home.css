@@ -1,9 +1,19 @@
+.home-container{
+  background-color: #fff;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  padding: 30px 70px 150px 70px;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+
 h1{
   text-align: center;
-  margin-top: 20px;
 }
 
 .button-container{
+  padding: 70px 90px 130px 40px;
   display: flex;
   justify-content: center;
   margin-top: 20px;
@@ -11,12 +21,14 @@ h1{
 
 button {
   padding: 10px 20px;
+  margin-left: 50px;
   color: #fff;
   background-color: #007bff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  
 }
 
 .button:hover{
