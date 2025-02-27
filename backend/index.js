@@ -52,7 +52,11 @@ server.post('/login', async (req, res) => {
       return res.status(401).json({ erro: 'Senha incorreta' });
     }
 
-    res.status(200).json({ mensagem: 'Login bem-sucedido'});
+    res.status(200).json({ 
+      mensagem: 'Login bem-sucedido',
+      tipo: usuario.tipo
+    });
+
   }catch(err){
     console.error(err.message);
     res.status(500).send('Erro no servidor');
@@ -102,28 +106,70 @@ server.put('/medicamentos/:id', async (req, res) => {
   }
 });
 
-server.delete('/medicamentos/:id', async (req, res) => {
-  const {id} = req.params;
+server.post('/medicamentos/retirar', async (req, res) => {
+  const { medicamentoId, quantidade } = req.body;
+
   try {
-    const {rows} = await pool.query('DELETE FROM medicamentos WHERE id = $1 RETURNING *', [id]);
-    if (rows.length > 0) {
-      res.status(204).send();
-    } else {
-      res.status(404).send('Medicamento não encontrado');
+    const { rows } = await pool.query('SELECT * FROM medicamentos WHERE id = $1', [medicamentoId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ erro: 'Medicamento não encontrado' });
     }
+
+    const medicamento = rows[0];
+    if (medicamento.quantidade < quantidade) {
+      return res.status(400).json({ erro: 'Quantidade insuficiente em estoque' });
+    }
+
+    await pool.query('UPDATE medicamentos SET quantidade = quantidade - $1 WHERE id = $2', [quantidade, medicamentoId]);
+
+    res.status(200).json({ mensagem: 'Retirada realizada com sucesso' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Erro no servidor');
   }
 });
 
+server.get('/medicamentos/estoque-baixo', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM medicamentos WHERE quantidade < 10 ORDER BY quantidade ASC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Erro no servidor');
+  }
+});
 
+server.post('/solicitacoes', async (req, res) => {
+  const { usuarioId, medicamentoId, quantidade } = req.body;
 
+  try {
+    await pool.query(
+      'INSERT INTO solicitacoes_retirada (usuario_id, medicamento_id, quantidade) VALUES ($1, $2, $3)',
+      [usuarioId, medicamentoId, quantidade]
+    );
 
+    res.status(201).json({ mensagem: 'Solicitação enviada com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao registrar solicitação:', err);
+    res.status(500).send('Erro no servidor');
+  }
+});
 
-
-
-
-
+server.get('/solicitacoes', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT sr.id, u.nome AS usuario, m.nome AS medicamento, sr.quantidade, sr.status
+      FROM solicitacoes_retirada sr
+      JOIN usuarios u ON sr.usuario_id = u.id
+      JOIN medicamentos m ON sr.medicamento_id = m.id
+      WHERE sr.status = 'pendente'
+      ORDER BY sr.id ASC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('Erro ao buscar solicitações:', err);
+    res.status(500).send('Erro no servidor');
+  }
+});
 
 server.listen(port);
