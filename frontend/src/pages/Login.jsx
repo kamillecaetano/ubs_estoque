@@ -17,15 +17,21 @@ const Login = () => {
     try{
       const response = await api.post('/login', {email, senha});
       if (response.status === 200) {
-        console.log('Login bem-sucedido');
-        navigate('/home'); 
+        const tipoUsuario = response.data.tipo;
+        localStorage.setItem("userTipo", tipoUsuario);
+
+        if (tipoUsuario === "admin") {
+          navigate('/home');
+        } else {
+          navigate('/home-user');
+        }
       }
 
     }catch(error){
       console.error('Erro ao realizar login:', error);
       alert('E-mail ou senha incorretos');
     }
-    console.log('Email:', email, 'Password:', senha);
+
   };
 
   return (

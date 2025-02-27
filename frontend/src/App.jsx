@@ -5,8 +5,9 @@ import Home from './pages/Home';
 import MedicamentosList from './pages/MedicamentosList';
 import CadastroMedicamento from './pages/CadastroMedicamentos';
 import Login from './pages/Login';
-
-
+import EstoqueBaixo from './pages/EstoqueBaixo';
+import HomeUser from './pages/HomeUser';
+import Solicitacoes from './pages/Solicitacoes';
 
 const App = () => {
   return (
@@ -17,7 +18,10 @@ const App = () => {
         <Route path="/home" element={<Home/>} />
         <Route path='/medicamentos' element= {<MedicamentosList/>}/>
         <Route path="/cadastro-medicamentos" element={<CadastroMedicamento />} />
-        
+        <Route path="/estoque-baixo" element={<EstoqueBaixo />} />
+        <Route path="/home-user" element={<HomeUser />} /> 
+        <Route path="/solicitacoes" element={<Solicitacoes />} />
+
       </Routes>
     </Router>
   );

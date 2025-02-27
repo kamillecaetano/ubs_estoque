@@ -18,6 +18,31 @@ const MedicamentosList = () => {
     fetchMedicamentos();
   }, []);
 
+  const handleRetirar = async (medicamentoId, nome) => {
+
+    const quantidadeStr = prompt(`Quantos unidades deseja retirar de "${nome}"?`);
+    if (!quantidadeStr || isNaN(quantidadeStr) || parseInt(quantidadeStr) <= 0) {
+      alert("Quantidade inválida!");
+      return;
+    }
+    const quantidade = parseInt(quantidadeStr);
+
+    const confirmacao = window.confirm(`Tem certeza que deseja retirar ${quantidade} unidade(s) de "${nome}"?`);
+    if (!confirmacao) return;
+
+    try {
+      const response = await api.post('/medicamentos/retirar', { medicamentoId, quantidade });
+      if (response.status === 200) {
+        alert('Retirada realizada com sucesso');
+        const updatedResponse = await api.get('/medicamentos');
+        setMedicamentos(updatedResponse.data);
+      }
+    } catch (error) {
+      console.error('Erro ao retirar medicamento:', error);
+      alert(error.response.data.erro);
+    }
+  };
+
   return(
     <div className="medicamentos-container">
       <div className="header">
@@ -43,6 +68,7 @@ const MedicamentosList = () => {
                   {medicamento.quantidade > 0 ? 'Disponível' : 'Indisponível'}
                 </span>
               </td>
+              <td><button onClick={() => handleRetirar(medicamento.id, medicamento.nome, medicamento.quantidade )}>Retirar</button></td>
             </tr>
           ))}
         </tbody>
